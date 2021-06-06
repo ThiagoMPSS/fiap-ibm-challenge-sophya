@@ -1,0 +1,28 @@
+{
+    "context": {
+        "private": {
+            "my_credentials":{
+                "user": "",
+                "password": ""
+            }
+        }
+    }, "output": {
+        "generic": [
+            {
+                "values": [],
+                "response_type": "text",
+                "selection_policy": "sequential"
+            }
+        ]
+    }, "actions": [
+        {
+            "name": "",
+            "type": "server",
+            "parameters": {
+                "user_input": "<? input.text ?>"
+            },
+            "credentials": "$private.my_credentials",
+            "result_variable": "$my_result"
+        }
+    ]
+}
