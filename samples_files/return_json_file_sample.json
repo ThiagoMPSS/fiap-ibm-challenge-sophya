@@ -1,0 +1,19 @@
+{
+    "message": [
+        "A adição é uma das principais operações matemáticas, ela está associada à ideia de juntar ou agrupar elementos de conjuntos. Podemos também, com base nela, definir as operações de subtração e multiplicação. Além disso a operação de adição é bastante utilizada em nosso cotidiano, por exemplo, quando vamos ao supermercado, assim, é muito importante compreender sua ideia e o método de como realizá-la.",
+        "Leia também: Sistema de numeração decimal – sistema que utiliza a base 10",
+        "A ideia de adição está ligada ao conceito de juntar elementos de dois ou mais conjuntos. Por exemplo, considere o conjunto formado por círculos e o conjunto formado por triângulos.",
+        "",
+        "Agora imagine que nosso interesse seja determinar a quantidade total de figuras geométricas, para isso teremos que juntar os círculos com os triângulos. Quando realizamos esse processo, estamos somando a quantidade de círculos com a quantidade de triângulos, e indicamos essa soma com o símbolo +. ",
+        "Juntando os elementos dos dois conjuntos temos:",
+        "",
+        "Observe o número de elementos em cada um dos conjuntos, temos 4 (quatro) círculos e 2 (dois) triângulos. Veja também que, ao juntar esses elementos, obtivemos um total de 6 (seis) figuras geométricas, podemos sintetizar todo esse raciocínio em uma expressão matemática, veja:",
+        "4 + 2 = 6", "", "Veja que o processo de representar graficamente cada elemento da adição torna-se complicado quando colocamos números maiores. Por exemplo, para determinar a soma de 1500 com 1432, teríamos que desenhar 1500 unidades e, em seguida, 1432 unidades, para, assim, contar a quantidade total delas. Veremos, a seguir, um método que facilita esse processo.",
+        "Copyright © 2021 Rede omnia. Todos os direitos reservados.",
+        "Desenvolvido por "
+    ],
+    "quest": "o que é soma?"
+}
+
+['', '', '', 'MENU', '', 'BiologiaFilosofiaFísicaGeografiaHistóriaLíngua PortuguesaLiteraturaMatemáticaQuímicaInglêsENEMTodas as Matérias', '\n{"@context":"http://schema.org/","@type":"Article","inLanguage":"pt-BR","headline":"O que \\u00e9 Universo?","description":"Na astronomia, o Universo corresponde ao conjunto de toda a mat\\u00e9ria e energia existente. Ele re\\u00fane os astros: planetas, cometas, estrelas, gal\\u00e1xias, nebulosas, sat\\u00e9lites, dentre outros. \\u00c9 um local imenso e para muitos, infinito. Note que do latim, a palavra universum...","datePublished":"2015-12-05T00:23:56+0000","dateModified":"2020-06-19T21:57:48+0100","mainEntityOfPage":{"@type":"WebPage","@id":"/o-que-e-universo/"},"publisher":{"@type":"Organization","name":"Toda Mat\\u00e9ria","logo":{"@type":"ImageObject","url":"https://static.todamateria.com.br/img/logo-amp.png","width":600,"height":60}},"image":"https://static.todamateria.com.br/layout/frontoffice/img/logo_ogimage.png","author":{"@type":"Person","name":"Toda Mat\\u00e9ria"}}Toda MatériaAstronomiaO que é Universo?', '', 'Compartilhar', 'Enviar', 'Email', 'Veja tambémOrigem do universoPlanetas do Sistema SolarCorpos CelestesTeoria do Big BangEstrelasAno-luz: O que é e como Calcular?Buraco NegroCometa Halley', 'Leitura RecomendadaPlanetas do Sistema SolarFases da LuaEstrelasLeis de KeplerCorpos CelestesPlaneta VênusTópicos RelacionadosAstronomia', 'Toda MatériaInscreva-se', '', '', '', 'BiologiaFilosofiaFísicaGeografiaHistóriaLíngua PortuguesaLiteraturaMatemáticaQuímicaInglêsEnemTodas as MatériasPopularesÚltimas MatériasComo CitarContatoPolítica de PrivacidadeSobreRSS\xa0Feed', 'Siga-nos', '', 'Toda Matéria: conteúdos escolares.© 2011-2021 7Graus', 'Como CitarContatoPolítica de PrivacidadeSobreRSS\xa0Feed']
+{'message': '', 'fonte_url': 'https://www.todamateria.com.br/o-que-e-universo/', 'quest': 'O que é universo?'}

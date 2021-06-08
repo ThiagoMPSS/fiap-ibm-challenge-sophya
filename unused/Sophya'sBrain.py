@@ -1,13 +1,15 @@
 import requests  # Importa a biblioteca "requests", necessária para obter as informações das páginas
 from requests.utils import requote_uri  # Importa a função "requote_uri" da biblioteca "requests", pra ficar mais facil de usar, essa função simplesmente converte o texto em URI sem isso os caracteres especiais, espaçamentos, etc... Vão dar problema no URL
 import re  # Importa a biblioteca que lida com Regex(Expressões Regulares)
-import html
+import html as html_lib
 
 # Variavel que lista os sites que vão ser usados... Ainda não usei ela do jeito certo!
-permsites = ["https://escolakids.uol.com.br/", "www.somatematica.com.br"]
+permsites = ["https://todamateria.com.br/", "https://mundoeducacao.uol.com.br/", "https://escolakids.uol.com.br/", "https://somatematica.com.br/"]
 # Variavel com o url de busca padrão do google
 search_url = "https://www.google.com/search?q="
 search_args = "site:"  # Variavel com os parâmetros de busca
+
+#* --------------------------- Tratamento da Página --------------------------- #
 
 # Função que pega a primeira ocorrencia da pesquisa no google!(Aí eu me lembrei do botão "Estou com sorte" '-', vou ver qual a melhor opção!)
 def get_url_from_google(html):
@@ -32,24 +34,37 @@ def get_url_from_google(html):
 
 # Função para remover todas as Tags html do documento
 def remove_tags(html):
-    regex_string = "<\/?.*?>" # Pattern para identificar tags
-    text = re.sub(regex_string, "", html) # Faz a substituição das ocorrencias pelo valor string vazio
-
+    #! regex_string = "<\/?[^(br)]?>"
+    regex_pattern = "<\/?(br|p).*\/?>"
+    text = re.sub(regex_pattern, "%?br?%", html)
+    regex_pattern = "<\/?.*?>" # Pattern para identificar tags
+    text = re.sub(regex_pattern, "", text) # Faz a substituição das ocorrencias pelo valor string vazio
+    regex_pattern = "%\?(br)\?%"
+    text = re.sub(regex_pattern, "<br>", text)
+    regex_pattern = "%\?(p)\?%"
+    text = re.sub(regex_pattern, "<p>", text)
     return text
+
+def remove_script_tags(html):
+    regex_pattern = "<script.*<\/script.*>"
+    return re.sub(regex_pattern, "", html)
+
+def clear_text(text):
+    return remove_tags(remove_script_tags(html_lib.unescape(re.sub("\s{2,}", "", text))))
 
 # Função para separar todos os paragrafos do documento html!
 def get_paragraphs(tags, paragraphs):
     regex_string = "<p>?[.\s\S]*?<\/p>" # Pattern para identificar as tags de paragrafo e seu conteudo
 
     for p in re.findall(regex_string, tags): #Encontra todas as ocorrencias e separa numa lista que é varrida pelo laço "for"
-        html_conv = html.unescape(p) # Converte os códigos especiais HTML para unicode
-        paragraphs.append(remove_tags(html_conv)) # Chama a função remove_tags e adiciona o retorno na lista paragraphs
+        paragraphs.append(clear_text(p)) # Chama a função remove_tags e adiciona o retorno na lista paragraphs
     return paragraphs
 
 # Separa o html em divs/sections/articles para melhor classificação de importancia no futuro!
-def get_page_content(html):
-    content = html.text
-    regex_string = "(<(div|section|article).*?>[.\s\S]*?<\/(div|section|article)>)"
+def get_page_content(page):
+    encode = page.encoding
+    content = page.content.decode()
+    regex_string = "(<(div|section|article|meta).*?>[.\s\S]*?<\/(div|section|article|meta)>)"
 
     paragraphs = []
     section_tags = re.findall(regex_string, content)
@@ -57,26 +72,42 @@ def get_page_content(html):
         content = tag[0]
         paragraphs = get_paragraphs(content, paragraphs)
 
+    regex_string = "<(script|title)"
+    if (len(paragraphs) == 0):
+        for tag in section_tags:
+            # if (not(re.search(regex_string, tag[0]))):
+            tag_clean = clear_text(tag[0]);
+            # if (tag_clean != ""):
+            paragraphs.append(tag[0])
+    
     return paragraphs
 
-# Função de inicio da função da IBM Cloud
+def get_page_by_url(url):
+    url = requote_uri(url)  # Converte o valor em URI
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
+    res = requests.get(url, headers=headers)  # Acessa a página e pega o conteúdo
+
+    html = res.content.decode()  # Pega o html
+    find_url = get_url_from_google(html)
+    find = get_page_content(requests.get(find_url))
+
+    return (find_url, find, html)
+
+#* -------------------------- Inicialização da Função ------------------------- #
 def main(params):
     # Separei essa parte em pequenas camadas pra ficar mais compreensivel!
     # Forma a URL de busca
     url = "{}{}{} {}".format(search_url, search_args,
                              permsites[0], params["perg"])
-    url = requote_uri(url)  # Converte o valor em URI
-    res = requests.get(url)  # Acessa a página e pega o conteúdo
 
-    html = res.text  # Pega o html
-    find_url = get_url_from_google(html)
-    find = get_page_content(requests.get(find_url))
+    find_url, find, html = get_page_by_url(url)
+
+    print(find)
 
     # Retorna o Json para o Watson!
-    return {'message': find[0], 'fonte_url': find_url, 'quest': params["perg"]}
+    return {'message': find[0] if (len(find) > 0) else "Não encontrei uma resposta!", 'fonte_url': find_url, 'quest': params["perg"]}
 
 
 print("\n\n\n")
-
 # Simula a interação com o Watson, nas IDEs essa parte é desnecessária para a implementação!
-print(main({"perg": "o que é soma?"}))
+print(main({"perg": "O que é universo?"}))
