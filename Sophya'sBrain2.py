@@ -2,6 +2,7 @@ import requests  # Importa a biblioteca "requests", necessária para obter as in
 from requests.utils import requote_uri  # Importa a função "requote_uri" da biblioteca "requests", pra ficar mais facil de usar, essa função simplesmente converte o texto em URI sem isso os caracteres especiais, espaçamentos, etc... Vão dar problema no URL
 import re  # Importa a biblioteca que lida com Regex(Expressões Regulares)
 import html as html_lib
+import ast
 
 # Simula a header do navegador Chrome no Windows
 headers = {'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
@@ -136,39 +137,65 @@ def verifica_meta_tags(meta_tags:dict): # Busca a meta tag description e checa s
     return (metodo, description if not(checar_black_list(description)) else "")
 
 #* ------------------ Fim do tratamento na página encontrada ------------------ #
+#* ------------------------- Inicio função matematica ------------------------- #
+def resolve_conta_matematica(expressao):
+    expressao = expressao.replace("x", "*")
+    if (re.search("[^-|*|+|x|\/](\()", expressao)):
+        expressao = re.sub("(\()", "*(", expressao)
+    t = eval(expressao)
+    return t
+#!MathRegex = (\d+(?:[x|*|+|\/|(|-]\d)+\)?)
+#!NumberRegex = ([-|*|+|x|\d|\/|(|)|\.|,]+)
+
+#* --------------------------- Fim função matematica -------------------------- #
 #* -------------------------- Inicialização da Função ------------------------- #
 def main(params):
     # Separei essa parte em pequenas camadas pra ficar mais compreensivel!
     #Gera o string com os sites para o filtro no google
-    sites = ""
-    for site in permsites:
-        if (sites == ""):
-            sites = "site:{}".format(site)
-        else:
-            sites = "{} OR site:{}".format(sites, site)
+    pergunta = params["perg"]
+    tipo = "pesquisa"
+    if (len(params) > 1):
+        tipo = params["tipo"]
 
-    pergunta = requote_uri("\"{}\"".format(params["perg"]))
-    # Forma a URL de busca
-    url = "{}{} {}".format(pesquisa_url, pergunta, sites)
+    if (tipo == "conta_matematica"):
+        resposta = resolve_conta_matematica(pergunta)
+        return {
+                    'mensagem': resposta if (resposta) else "Ô perguntinha...!",
+                    'formula': pergunta
+               }
+    else:
+        sites = ""
+        for site in permsites:
+            if (sites == ""):
+                sites = "site:{}".format(site)
+            else:
+                sites = "{} OR site:{}".format(sites, site)
 
-    url_encontrado, html = buscar_no_google(url)
-    html_encontrado, meta_tags = tratar_pagina_encontrada(url_encontrado)
+        pergunta = requote_uri("\"{}\"".format(pergunta))
+        # Forma a URL de busca
+        url = "{}{} {}".format(pesquisa_url, pergunta, sites)
 
-    metodo, meta_description = verifica_meta_tags(meta_tags)
-    if (len(meta_description) == 0):
+        url_encontrado, html = buscar_no_google(url)
+        html_encontrado, meta_tags = tratar_pagina_encontrada(url_encontrado)
+
+        # metodo, meta_description = verifica_meta_tags(meta_tags)
+        # if (len(meta_description) == 0):
         metodo, meta_description = buscar_tags_whitelist(html_encontrado)
 
-    # Retorna o Json para o Watson!
-    return {
-                'messagem': meta_description if (len(meta_description) > 0) else "Não encontrei uma resposta!",
-                'metodo': metodo,
-                'url_busca': url,
-                'fonte_url': url_encontrado,
-                'pergunta': params["perg"]
-           }
+        # Retorna o Json para o Watson!
+        return {
+                    'mensagem': meta_description if (len(meta_description) > 0) else "Não encontrei uma resposta!",
+                    'metodo': metodo,
+                    'url_busca': url,
+                    'fonte_url': url_encontrado,
+                    'pergunta': params["perg"]
+            }
     #! return {'message': find[0] if (len(find) > 0) else "Não encontrei uma resposta!", 'fonte_url': find_url, 'quest': params["perg"]}
 
 
 print("\n\n\n")
 # Simula a interação com o Watson, nas IDEs, essa parte é desnecessária para a implementação!
-print(main({"perg": "Como fazer uma macarronada"}))
+print(main({
+                "perg": "4x5+9(4-4+8)",
+                "tipo": "conta_matematica"
+           }))
