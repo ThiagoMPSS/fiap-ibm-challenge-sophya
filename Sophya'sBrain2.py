@@ -112,7 +112,7 @@ def buscar_melhor_correspondencia(texto:list, pergunta:str):
         for i in range(len(texto)):
             s = texto[i]
             NaBlacklist = False 
-            #Verifica se a palavra está na Blacklist
+            # Verifica se a palavra está na Blacklist
             for p2 in s.split(" "):
                 if (p2.lower() in blacklist):
                     NaBlacklist = True
@@ -141,8 +141,9 @@ def tratar_pagina_encontrada(url:str):
     res = requests.get(url, headers=headers) # Abre a página
     encode = res.encoding
     html = res.content.decode(encode) # Decodifica
-    meta_tags = buscar_meta_tags(html)
-    return (html, meta_tags)
+    #! meta_tags = buscar_meta_tags(html)
+    #! return (html, meta_tags)
+    return html
 
 def separar_paragrafos(html:str):
     regex_pattern = "<p>?[.\s\S]*?<\/p>" # Pattern para identificar as tags de paragrafo e seu conteudo
@@ -177,27 +178,27 @@ def buscar_tags_whitelist(html:str, pergunta:str):
     melhor_correspondencia = buscar_melhor_correspondencia(respostas, pergunta)
     return ("whitelist-tag", melhor_correspondencia if (len(melhor_correspondencia) > 0) else respostas[0])
 
-def buscar_meta_tags(html:str):
-    regex_pattern = "<meta name=(.+) content=(.+).*>"
-    meta_tags = re.findall(regex_pattern, html) # Encontra todas as tags meta e retorna em forma de tuplas
-    regex_pattern = "<meta property=(.+) content=(.+).*>"
-    teste = re.findall(regex_pattern, html)
-    meta_tags.extend(teste) # Encontra todas as tags meta e retorna em forma de tuplas
-    meta_tags = limpar_texto(meta_tags)
-    meta_tags = dict(meta_tags) # Transforma as tuplas em dicionarios
-    return meta_tags
+#! def buscar_meta_tags(html:str):
+#!     regex_pattern = "<meta name=(.+) content=(.+).*>"
+#!     meta_tags = re.findall(regex_pattern, html) # Encontra todas as tags meta e retorna em forma de tuplas
+#!     regex_pattern = "<meta property=(.+) content=(.+).*>"
+#!     teste = re.findall(regex_pattern, html)
+#!     meta_tags.extend(teste) # Encontra todas as tags meta e retorna em forma de tuplas
+#!     meta_tags = limpar_texto(meta_tags)
+#!     meta_tags = dict(meta_tags) # Transforma as tuplas em dicionarios
+#!     return meta_tags
 
-def verificar_meta_tags(meta_tags:dict): # Busca a meta tag description e checa se o conteudo não está na blacklist
-    metodo = "meta-tag"
-    description = ""
-    if ("og:description" in meta_tags.keys()):
-        description = meta_tags["og:description"]
-    elif ("description" in meta_tags.keys()):
-        description = meta_tags["description"]
+#! def verificar_meta_tags(meta_tags:dict): # Busca a meta tag description e checa se o conteudo não está na blacklist
+#!     metodo = "meta-tag"
+#!     description = ""
+#!     if ("og:description" in meta_tags.keys()):
+#!         description = meta_tags["og:description"]
+#!     elif ("description" in meta_tags.keys()):
+#!         description = meta_tags["description"]
 
-    if (description.endswith("...")):
-        description = ""
-    return (metodo, description if not(checar_blacklist(description)) else "")
+#!     if (description.endswith("...")):
+#!         description = ""
+#!     return (metodo, description if not(checar_blacklist(description)) else "")
 
 #* ------------------ Fim do tratamento na página encontrada ------------------ #
 #* ------------------------- Inicio função matematica ------------------------- #
@@ -261,7 +262,7 @@ def main(params):
                     }
     try:
         # Separei essa parte em pequenas camadas pra ficar mais compreensivel!
-        #Gera o string com os sites para o filtro no google
+        # Gera o string com os sites para o filtro no google
         pergunta = params["perg"]
         tipo = "pesquisa"
         if (len(params) > 1):
@@ -291,10 +292,11 @@ def main(params):
             if (url_encontrado == False):
                 return retorno_falso
 
-            html_encontrado, meta_tags = tratar_pagina_encontrada(url_encontrado)
+            #!html_encontrado, meta_tags = tratar_pagina_encontrada(url_encontrado)
+            html_encontrado = tratar_pagina_encontrada(url_encontrado)
 
-            # metodo, meta_description = verifica_meta_tags(meta_tags)
-            # if (len(meta_description) == 0):
+            #! metodo, meta_description = verifica_meta_tags(meta_tags)
+            #! if (len(meta_description) == 0):
             metodo, meta_description = buscar_tags_whitelist(html_encontrado, pergunta)
 
             # Retorna o Json para o Watson!
